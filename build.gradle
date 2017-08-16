@@ -1,0 +1,64 @@
+buildscript {
+    repositories {
+        maven { url = 'https://jenkins.uptake.com/nexus/content/groups/public' }
+    }
+    dependencies {
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:1.3.1.RELEASE')
+    }
+}
+
+defaultTasks 'clean', 'check'
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+
+// Sets Java version source and target compatibility.
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories { maven { url = 'https://jenkins.uptake.com/nexus/content/groups/public' } }
+
+project.ext {
+    swaggerVersion = '2.6.0'
+    resteasyVersion = '3.0.19.Final'
+}
+
+idea {
+    module {
+        // If this is not specified then intellij will set the output and the test output to the same directory.
+        testOutputDir = file('build/test')
+    }
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot'
+    compile 'org.springframework.boot:spring-boot-autoconfigure'
+    compile 'org.springframework:spring-web'
+    compile "org.jboss.resteasy:resteasy-servlet-initializer:${resteasyVersion}"
+    compile "io.springfox:springfox-swagger2:${swaggerVersion}"
+
+    compileOnly 'javax.servlet:javax.servlet-api'
+
+    runtime 'com.paypal.springboot:resteasy-spring-boot-starter:2.2.0-RELEASE'
+    runtime 'org.springframework.boot:spring-boot-starter-log4j'
+    runtime 'org.springframework.boot:spring-boot-starter-web'
+    runtime "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+
+    compile "io.swagger:swagger-jaxrs:1.5.8"
+}
+
+configurations {
+    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+}
+
+
+// Specifications for the 'gradle wrapper' command to produce the gradle wrapper.
+task wrapper(type: Wrapper) {
+    println "Using Gradle Version ${GradleVersion.current().getVersion()}"
+    gradleVersion = '2.14.1'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+
+
